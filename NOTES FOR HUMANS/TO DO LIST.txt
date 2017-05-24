@@ -1,0 +1,40 @@
+﻿TO DO LIST
+,--------------------------------------------------------------------.
+| * Make my socketwork stuff multifile with its own makefile     | x |
+|----------------------------------------------------------------|---|
+| * Make a capsule function.                                     | x |
+|----------------------------------------------------------------|---|
+| * Make a proper struct for making a booking                    | x |
+|----------------------------------------------------------------|---|
+| * Actually send something and rebuild it.                      | x |    
+|----------------------------------------------------------------|---|
+| * Make server build a list, not just receive single bookings.  | x |
+|----------------------------------------------------------------|---|
+| * Find out exactly what happens between send() and recv().     | x |
+|   I need to know what buffers there are and how they work.     |   |
+|----------------------------------------------------------------|---|
+| * Make a diagram of everything I can make concurrent.          | x |
+|----------------------------------------------------------------|---| 
+| * Use my hex functions to better display the packets.          | x |
+|----------------------------------------------------------------|---| 
+| * Figure out why the response doesn't work.                    | x |
+|----------------------------------------------------------------|---| 
+| * Use select() in server.                                      | x |
+|----------------------------------------------------------------|---| 
+| * Have a group system for drivers, dispatchers, etc.           |   |
+|----------------------------------------------------------------|---| 
+| * Have server able to relay between groups.                    |   |
+|----------------------------------------------------------------|---| 
+| * Make a super basic Python driver app.                        | N |
+|----------------------------------------------------------------|---| 
+| * Decide if server takes input from command line.              |   |
+|----------------------------------------------------------------|---|
+| * Figure out the thread shit.                                  |   |
+|----------------------------------------------------------------|---| 
+| * Write log of events to mysql (log only)                      |   |
+|----------------------------------------------------------------|---| 
+| * Figure out if dispatch needs separate lists for bookings.    |   |
+|----------------------------------------------------------------|---| 
+| * New plan: no android app; run it through a                   |   |
+|   browser. I need to learn js and socket.io.                   |   |
+'--------------------------------------------------------------------'

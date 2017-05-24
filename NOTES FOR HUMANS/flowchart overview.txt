@@ -1,0 +1,174 @@
+An attempt to diagram everything that should happen:
+
+DISPATCHER:
+
+    DISPATCHER OPS
+    --------------
+    Add booking                             
+        get info    
+        make struct    
+        make capsule    
+        open socket
+            success
+                send capsule    
+                receive confirm, wait    
+                add locally(mutex)    
+            fail
+                inform user server is down
+                keep trying
+    Delete booking                          
+        choose booking    
+        send delete to server    
+        receive confirm, wait    
+        delete locally(mutex)
+        done
+    Edit booking                            
+        choose booking    
+        edit it    
+            success
+                make struct    
+                make capsule    
+                open socket    
+                send capsule    
+                receive confirm    
+                change locally(mutex)    
+                done    
+            fail (e.g. deleted while editing)
+                inform user
+                abort edit
+                done
+                
+    Dispatch booking                        
+        choose booking    
+        choose driver    
+        send assignment to server    
+        receive confirm    
+        update locally(mutex)    
+        done
+    Get server's list (no other operations can happen before this)
+        send request    
+        receive all bookings    
+        build local list    
+        done
+    Listen for server                       listen cycle
+    Deal with server                        
+        receive add booking                 
+            get packet    
+            unpack    
+            rebuild    
+            add to list(mutex)    
+            done
+        receive delete booking              
+            get packet    
+            search for matching job_id               
+            delete it(mutex)    
+            done
+        receive edit booking                
+            get packet    
+            search for matching job_id    
+            replace with this struct(mutex)    
+            done
+        receive dis->driver operation       
+            get packet    
+            search for matching job_id    
+            delete from waiting list(mutex)    
+            add to dispatched list(mutex)    
+            done
+        receive driver->dis operation       
+            get packet    
+            search for matching job_id    
+            add to waiting list(mutex)    
+            delete from  dispatched list(mutex)    
+            done
+        receive message                     
+            get packet    
+            unpack    
+            rebuild    
+            display message to dispatcher    
+            done
+        receive driver operation            
+            get packet    
+            deal with noshow/complete/wait/etc
+            done
+    manage local lists
+    log                                     
+        log all events under their job_id in sql. 
+    send messages                           
+        get message    
+        get recipient    
+        send to server    
+        get confirm    
+        done
+    autodispatchbot                         
+        <autodispatch while on>
+        no calls
+            wait
+        no cabs logged in
+            wait
+        a call exists and 1 free cab
+            give cab the call
+        a call exists and 2+ cab logged in
+            Make list of:
+                * Cabs with:
+                    - only one stop, and 
+                    - not waiting, and
+                    - have passenger, and
+                    - drop-off < 10 mins, and
+                    - have no pending call.
+                * Free cabs.
+
+            For free cabs, calculate 
+            their distance to the call.
+
+            For busy cabs, calculate
+            their distance to their
+            drop-off point, plus the
+            distance from there to
+            the call.
+
+            Give the call to the cab with
+            the least distance to the call.
+    
+    DRIVER OPS
+    --------------
+    Listen for server
+    Deal with server
+    Get booking
+    Get take instruction
+    Get edit instruction
+    Send complete/cancelled/noshow/etc
+    receive message
+    send message
+    sync with server
+    log
+    manage local lists
+    cash stuff
+    
+    SERVER OPS
+    ----------
+    Listen for connections
+    <fork>Deal with connections, buffer bookings, deal with them one at a time. fork gets bookings, adds them to buffer list. always checks to see if any members of buffer cancel each other out. buffered edits will be managed too. This prevents server from sending everyone an add followed immediately by a delete. Might be worth it.
+    add booking
+        get capsule from buffer
+        decapsule
+        build struct
+        give job_id
+        send job_id to sender
+        send struct to all other dispatchers
+        
+    edit booking
+    delete booking
+    dispatch booking
+    send sync list
+    log
+    manage local lists
+    relay messages
+    relay driver operations
+    backup local stuff and recovery
+    
+    CUSTOMER OPS
+    ------------
+    Add booking
+    Delete booking
+    Edit booking
+    Receive info

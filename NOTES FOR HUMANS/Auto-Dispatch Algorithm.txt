@@ -1,0 +1,84 @@
+TAXI CALLER'S AUTO-DISPATCH
+
+This is currently how TaxiCaller's auto-dispatch works:
+
+,-> WAIT
+|    |
+| NO CALLS    NO CABS    FREE CABS
+|    |           |           |
+'-<--'-----<-----'       Give call 
+|                        to closest 
+|                        free cab.
+|                            |
+'----------<-----------------'
+
+WHY IT SUCKS: 
+
+* It will happily give a call to a free cab that is
+  1000 miles away. It doesn't consider cabs that are
+  soon-to-be-free, and that's a big mistake.
+
+* If a cab becomes 'unexpectedly free', it won't reevaluate its recent
+  decisions. E.g. A booking is given to a free cab 1000 miles away. If
+  a new cab logs in that is close to the call, the auto-dispatch won't
+  take the call from the 1000-mile cab and give it to the new cab.
+
+My algorithm solves both of these problems.
+
+  
+  
+KORGAN'S AUTO-DISPATCH
+
+
+This is how my auto-dispatch would work:
+
+,-> WAIT
+|    |         NO CABS           1 CAB                    >1 CAB                       
+| NO CALLS    LOGGED IN        LOGGED IN                 LOGGED IN
+|    |           |                |                         |
+|-<--'-----<-----'         If cab is free,      Make list of:
+|                          give it the call.        * Cabs with:
+|                                 |                     - only one stop, and 
+|----------<----------------------'                     - not waiting, and
+|                                                       - have passenger, and
+|                                                       - drop-off < 10 mins, and
+|                                                       - have no pending call.
+|                                                   * Free cabs.
+|
+|                                               For free cabs, calculate 
+|                                               their distance to the call.
+|
+|                                               For busy cabs, calculate
+^                                               their distance to their
+|                                               drop-off point, plus the
+|                                               distance from there to
+|                                               the call.
+|
+|                                               Give the call to the cab with
+|                                               the least distance to the call.
+|                                                           |
+'----------<-----------------------------<------------------'
+
+This works much better, but I can still improve it.
+If a cab becomes 'unexpectedly available', then the pending calls list might need to be amended.
+E.g. Say I've given some cab a pending call because I expect it to be the closest cab. Say then,
+that a cab that was away, or in wait status, or not logged in, or on its way to a call, becomes 
+free. This is considered an unexpected event. This is because cabs are expected to go from busy 
+to free, not from 'on its way to a call' to free. Also, previously waiting or away cabs before  
+weren't considered in the above calculation. So, if a cab becomes unexpectedly free, that is an 
+event. When this happens, Reevaluate the pendings calls: calls that are in driver's queues. It  
+might be possible to rearrange them. Don't give a driver more than one pending call.
+This will also happen when a call is adjusted. E.g. if a cab that was expected to end soon was
+given a pending call, but that cab adds another stop, then the pending call will have to be 
+re-evaluated.
+
+After that, you're back in wait status. If there is a call
+on the list, it will be dealt with using the above rules.
+
+Another issue: auto-dispatch needs to dispatch timed calls before ASAP calls.
+Another issue: It's very bad practice to take an active call away from a driver and give it to
+another driver. This will piss drivers off. If a driver is half-way to a call, and I take it from
+him, that's shitty. However, there may be rare circumstances in which this is necessary. E.g. Say
+I have given driverA a timed call. Say that the timed call is already late. Say that driverA is
+about 20 mins away. Say that driverB becomes 'unexpectedly available' and he is 5 mins from the
+timed call. In this situation, it would be better to transfer the call from driverA to driverB.

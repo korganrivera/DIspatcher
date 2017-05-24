@@ -1,0 +1,130 @@
+so let's walk through a scenario for a booking.
+
+I talk to customer, I enter the booking details into a form. I click 'book.'
+The booking gets added to my queue. I can see the queue.
+Is the booking on the server yet? If I want the server to know everything always, and log everything, then it should be. or that stuff could be on the dispatch side.
+Options:
+    1.  Server only routes bookings between driver and dispatch.
+        PROS
+            If server goes down, bookings are still on dispatcher client.
+        CONS
+            Might make it trickier to log activity history.
+            
+    2.  Bookings go directly to the server whether or not they've been dispatched yet.
+        Dispatcher's screen only reflects what's true at the server.
+        PROS
+            If dispatcher client dies, it only needs to log into server to get the info again.
+            Server knows about all bookings, even when they're cancelled on dispatcher side.
+            This makes logging activity history simpler.
+        CONS
+            Takes time to send to server and read back to dispatcher.
+
+I decide to give that booking to a driver. I drag it over or whatever.
+That booking gets sent to the server, which forwards it to the driver.(depending on which option I chose from above.)
+
+Option 2 from above makes sense: customers will book online which has to go to the server They wouldn't book to the dispatcher because they might not be logged in, or the desktop might be off. Wouldn't make sense. However, I could prevent customer bookings when no dispatcher is logged in.
+Assume that there is always a dispatcher logged in. Customer bookings to go to server. Server updates logged in dispatchers. 
+But, I have to work out how the server can send only the changes, so it's not sending massive packets.
+Also, what about the driver's positions on the map: does that go to the server every 5 seconds and get sent to the dispatcher every 5 seconds? Is that overkill? 
+----------------------------
+
+Basic Notes for Dispatch Software 
+---
+See live Google map
+	Google Map Tracks API
+	Google Maps SDK
+	Node.js/Express/Google Maps JavaScript API stack with Firebase (firebase.com), GeoFire
+	LEARN: Google Maps APIs Online Training
+	Google API alternatives: Leaflet, Modest Maps, Polymaps.
+	Also, Consider using Corona (lua) instead of SDK (Java).
+
+Booking:
+    Enter addresses, autocomplete. 
+    Enter time. 
+    Recur. 
+    Autocalc fee. 
+    See previous bookings by them. 
+
+Dispatch:
+    See logged-in drivers. 
+    Give calls in list to whomever. 
+    Autodispatch function edit! 
+    See driver status. POB, away, &c.
+
+Logs, admin:
+    See log history, db funcs,reports.
+    Do run sheets calc. 
+    Add drivers, delete. 
+    Add cabs, delete. 
+---
+Driver-side:
+    See call list
+    Call funcs: accept, cancel,  &c.
+    Log all journeys, upload. 
+---
+Chat:
+    Yep. Type, tts. 
+
+Video:
+    Record everything in cabs always
+    Store on server,  compressed for x days. 
+
+Customer side:
+    Basic:
+        Receive on the way text. 
+    Adv. :
+        Customer sees live map. 
+        Online booking. App & site. 
+        Ride info, est. times, prices. 
+
+Cab maintenance:
+    Schedule for repair, clean. 
+    Db of costs, efficiency calcs.
+
+DB summary:
+	previous calls: driver, name, number, address, date, notes, etc.
+	drivers: loghours, link to calls, status, names, calllist, etc.
+	cabs: number, name, who drove, repairs, dates, etc.
+	current call list: all info, recurrence, etc.
+	video
+	chat
+	cab maintenance: hostory of repairs, reports.
+
+	
+	
+--------------------------------------------------------------------
+LET'S SIMPLIFY THIS PROBLEM: BAREBONES ACTIVATE!
+
+driver app:
+	inputs from central (add, delete, change, move)
+		queue job object (where, when)
+		remove job object
+		update job object
+		move job object
+	inputs from driver
+		job actions: accept, wait, delete, complete, add, change
+	outputs to driver
+		show job list
+		show options
+	outputs to central:
+		driver's edits
+	meta: 
+		driver edit permissions.
+
+booking program:
+	type phone number/grab caller id somehow.
+	type address
+		empty address field displays previous known address for phone number.
+		non-empty address field displays google maps autocomplete.
+        If user enters an address that can't be confirmed as legit, tell the user. You can confirm a booking with that address, but it won't have long lat coords.
+        user can also enter POI and they will be looked up on another list.
+	set time
+        default time is now. You can change this.
+    set recurrence
+	add job object to queue.
+        move booking to queue
+        log this booking in db
+        add this address to list of known addresses associated with this phone number.
+        update queue display
+        clear input fields for the next booking
+   

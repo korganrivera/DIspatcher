@@ -1,0 +1,58 @@
+Notes on Makefiles and dependency.
+
+Think of your project as these layers
+
+,--------------.
+| HEADERS      |
+|--------------|
+| SOURCE FILES |
+|--------------|
+| OBJECT FILES |
+|--------------|
+| EXECUTABLE   |
+'--------------'
+
+Then, draw a tree that shows what depends
+on what, between each of these layers.
+
+EXECUTABLE      OBJECT   SOURCE      HEADERS
+                                 ,-- a.h
+            ,-- main.o - main.c -|
+output.exe -|                    '-- b.h
+            |
+            |              
+            '-- X.o ---- X.c ------- b.h
+                           
+Then you can write your makefile. The first line is this:
+
+    output: main.o X.o
+        gcc main.o X.o -o output
+    
+This says, "output depends on main.o and X.o. If either of these change,
+rebuild output with this command", where the command is the second line.
+
+The next line is this:
+
+    main.o: main.c a.h b.h
+        gcc -c main.c
+        
+This says, "main.o depends on its source code and the headers files that the
+source includes. If either of these change, rebuild main.o with this command."
+
+Then:
+
+    X.o: X.c b.h
+        gcc -c X.o
+        
+Similar to the one above. Notice the '-c'. This flag makes
+gcc only create an object file, which is what we want.
+
+Runthrough:
+    If a.h changes, then main.c will have to update.
+    If main.c updates, then main.o will have to update.
+    If main.o updates, then output.exe will have to update.
+    
+    So this change to a.h will make these files
+    update, but X.o won't have to be updated.
+    
+    

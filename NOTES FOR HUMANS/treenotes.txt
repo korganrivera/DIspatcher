@@ -1,0 +1,33 @@
+Given this:
+
+a
+ xy
+  a
+   cat
+   xy
+  cat
+   xy
+    a
+    xy
+   a
+ cat
+  a
+   xy
+   xy
+    xy
+    a
+  xy
+   cat
+   cat
+
+generate this:
+
+        .--------a--------.        
+        |                 |     
+   .---xy---.       .---cat---.
+   |        |       |         |
+ .-a-.   .-cat-. .--a--.    ._xy_.
+ |   |   |     | |     |    |    |
+cat xy .-xy-.  a xy .-xy-. cat   a
+       |    |       |    |
+       a   xy       xy   a            

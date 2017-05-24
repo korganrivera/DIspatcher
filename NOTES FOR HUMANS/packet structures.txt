@@ -1,0 +1,44 @@
+/*
+    Writing a bind function. 
+    Will make main() more readable.
+*/
+
+___________________________________
+packet structure for all the things
+
+add booking
+    size|add|booking data
+    
+delete booking
+    size|delete|booking id
+
+edit booking
+    size|edit|booking data
+
+send a booking to a driver
+    size|dispatch|booking id, driver id
+    
+take a booking from a driver
+    size|take|booking id, driver id
+    
+send message to driver
+    size|message|driver id, message
+
+send confirmation of receipt
+    size|receipt|receipt number
+    
+move booking from driver1 to driver2
+    size|transfer|booking id, driver1 id, driver2 id
+    
+sync list
+    size|sync|alllll the bookings
+    
+driver status change
+    size|status|driver id, new status
+    
+driver position change
+    size|gps|driver id, new position
+
+kick driver
+    size|kick|driver id
+
