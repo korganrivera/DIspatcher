@@ -21,13 +21,13 @@ a
    cat
 
 generate this:
+       .--------a---------.
+       |                  |
+   .---xy----.       .---cat---.
+   |         |       |         |
+ .-a-.    .-cat-. .--a--.    .-xy-.
+ |   |    |     | |     |    |    |
+cat xy .-xy-.   a xy .-xy-. cat   a
+       |    |        |    |
+       a   xy        xy   a
 
-        .--------a--------.        
-        |                 |     
-   .---xy---.       .---cat---.
-   |        |       |         |
- .-a-.   .-cat-. .--a--.    ._xy_.
- |   |   |     | |     |    |    |
-cat xy .-xy-.  a xy .-xy-. cat   a
-       |    |       |    |
-       a   xy       xy   a            
